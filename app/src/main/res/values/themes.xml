@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.ToDos" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.ToDos.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#78B3A9</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/app_icon</item>
+        <item name="windowSplashScreenAnimationDuration">4000</item>
+    </style>
+</resources>
