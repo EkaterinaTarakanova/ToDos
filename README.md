@@ -1,4 +1,4 @@
-Усложениние 1.
+Усложнение 1.
 ![Наличие утечек](https://github.com/user-attachments/assets/e830b690-78e4-4703-9ec5-47db43989751)
 ![Производительность](https://github.com/user-attachments/assets/c85e6d21-b92b-48b7-9e5f-e5aaaa0733ec)
 Усложнение 2.
