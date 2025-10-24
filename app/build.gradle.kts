@@ -53,6 +53,7 @@ dependencies {
     implementation("com.github.tony19:logback-android:3.0.0")
     implementation("joda-time:joda-time:2.12.2")
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.navigation:navigation-compose:2.9.5")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
