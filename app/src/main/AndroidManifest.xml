@@ -10,11 +10,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/app_icon"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ToDos.Starting">
+        android:theme="@style/Theme.ToDos"
+        android:windowSoftInputMode="adjustResize">
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.ToDos.Starting">
+            android:theme="@style/Theme.ToDos">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
