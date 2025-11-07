@@ -43,23 +43,16 @@ fun NavigationGraph(fileStorage: FileStorage) {
 
         composable(Routes.EditScreen.route + "/{todoId}") { stackEntry ->
             val todoId = stackEntry.arguments?.getString("todoId")
-            val editTaskViewModelFactory = EditTaskViewModelFactory(fileStorage, todoId ?: "new")
-            val selectedColorFromPicker = stackEntry.savedStateHandle.get<Int>("selectedColor")
-                ?.let { Color(it) }
+            val editTaskViewModelFactory = EditTaskViewModelFactory(fileStorage, todoId ?: "new", stackEntry.savedStateHandle)
 
             EditTaskScreen(
                 onColorPickerClick = {
                     navController.navigate(Routes.ColorPicker.route)
                 },
-                onSaveTask = { savedTask ->
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        "newTaskId",
-                        savedTask.uid
-                    )
+                onSaveTask = {
                     navController.popBackStack()
                 },
                 editTaskViewModelFactory = editTaskViewModelFactory,
-                customColor = selectedColorFromPicker
             )
         }
 

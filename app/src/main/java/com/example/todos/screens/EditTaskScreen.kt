@@ -27,14 +27,9 @@ import com.example.todos.viewModels.EditTaskViewModel
 @Composable
 fun EditTaskScreen(
     onColorPickerClick: () -> Unit,
-    customColor: Color?,
     onSaveTask: (TodoItem) -> Unit, editTaskViewModelFactory: EditTaskViewModelFactory
 ) {
     val viewModel: EditTaskViewModel = viewModel(factory = editTaskViewModelFactory)
-
-    LaunchedEffect(customColor) {
-        customColor?.let { color -> viewModel.customColor.value = color }
-    }
 
     LazyColumn(
         modifier = Modifier
