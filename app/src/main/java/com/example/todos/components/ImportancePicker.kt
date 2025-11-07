@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -17,13 +18,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.todos.Importance
 import com.example.todos.R
 
 
 @Composable
-fun ImportancePicker(isDone: Boolean) {
-    val importanceLevels = listOf("Низкая", "Обычная", "Высокая")
-    val selectedImportance = remember { mutableStateOf("Обычная") }
+fun ImportancePicker(isDone: Boolean, selectedImportance: MutableState<Importance>) {
+    val importanceLevels = listOf(Importance.ORDINARY, Importance.IMPORTANT, Importance.UNIMPORTANT)
 
     Column(
         modifier = Modifier.alpha(if (isDone) 0.5f else 1f)
@@ -41,7 +42,7 @@ fun ImportancePicker(isDone: Boolean) {
         ) {
             importanceLevels.forEach { level ->
                 ImportanceButton(
-                    text = level,
+                    text = level.russianName,
                     isSelected = selectedImportance.value == level,
                     onClick = { if (!isDone) selectedImportance.value = level },
                     isEnabled = !isDone

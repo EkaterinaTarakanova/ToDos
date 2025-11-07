@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,11 +37,8 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectedTimeInfo(isDone: Boolean) {
+fun SelectedTimeInfo(isDone: Boolean, onDateSelected: MutableState<Long?>) {
     val openDialog = remember { mutableStateOf(false) }
-    val onDateSelected = remember {
-        mutableStateOf(convertMillisToDate(System.currentTimeMillis()))
-    }
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = System.currentTimeMillis()
     )
@@ -81,7 +79,7 @@ fun SelectedTimeInfo(isDone: Boolean) {
             }
 
             Text(
-                text = onDateSelected.value,
+                text = convertMillisToDate(onDateSelected.value ?: System.currentTimeMillis()),
                 color = if (isDone) Color.Gray else Color.Unspecified
             )
         }
@@ -93,7 +91,7 @@ fun SelectedTimeInfo(isDone: Boolean) {
             confirmButton = {
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
-                        onDateSelected.value = convertMillisToDate(millis)
+                        onDateSelected.value = millis
                     }
                     openDialog.value = false
                 }) {

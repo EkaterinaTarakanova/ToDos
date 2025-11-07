@@ -27,11 +27,11 @@ import com.example.todos.components.ColorPicker
 fun ColorPickerScreen(
     onClick: (Color, Offset) -> Unit,
     initialColor: Color,
-    initialPosition: Offset?
+    initialPosition: Offset?,
 ) {
     val currentColor = remember { mutableStateOf(initialColor) }
     val currentPosition = remember { mutableStateOf(initialPosition ?: Offset.Zero) }
-    val brightness = remember { mutableFloatStateOf(1f) }
+    val currentBrightness = remember { mutableFloatStateOf(1f) }
     val canvasSize = remember { mutableStateOf(Offset(300f, 300f)) }
 
     Column(
@@ -44,9 +44,9 @@ fun ColorPickerScreen(
         Row {
             SelectedColor(color = currentColor.value)
             Slider(
-                value = brightness.value,
+                value = currentBrightness.value,
                 onValueChange = { newBrightness ->
-                    brightness.value = newBrightness
+                    currentBrightness.value = newBrightness
                     val hue = (currentPosition.value.x / canvasSize.value.x) * 360
                     val saturation = 1 - (currentPosition.value.y / canvasSize.value.y)
                     val newColor = Color.hsv(hue = hue, value = newBrightness, saturation = saturation)
@@ -58,7 +58,7 @@ fun ColorPickerScreen(
         ColorPicker(
             onColorChanged = { newColor -> currentColor.value = newColor },
             currentPosition = currentPosition,
-            brightness = brightness.value,
+            brightness = currentBrightness.value,
             onCanvasSize = { width, height -> canvasSize.value = Offset(width, height) }
         )
         Button(onClick = { onClick(currentColor.value, currentPosition.value) }) {

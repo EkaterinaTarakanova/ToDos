@@ -1,13 +1,14 @@
 package com.example.todos
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateListOf
 import org.json.JSONArray
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class FileStorage(context: Context) {
-    private val _todoItems = mutableListOf<TodoItem>()
-    val todoItems: List<TodoItem> get() = _todoItems.toList()
+    private val _todoItems = mutableStateListOf<TodoItem>()
+    val todoItems: List<TodoItem> get() = _todoItems
     private val file = context.getSharedPreferences("todos", Context.MODE_PRIVATE)
     private val key = "todo_items"
 
@@ -46,6 +47,14 @@ class FileStorage(context: Context) {
         log.info("Загружаем задачи из файла, всего задач: " + _todoItems.size)
         _todoItems.forEach { todo ->
             log.info("'${todo.text}' (${todo.importance})")
+        }
+    }
+
+    fun updateTodo(updatedTodo: TodoItem) {
+        val index = _todoItems.indexOfFirst { it.uid == updatedTodo.uid }
+        if (index != -1) {
+            _todoItems[index] = updatedTodo
+            saveTodosToFile()
         }
     }
 }

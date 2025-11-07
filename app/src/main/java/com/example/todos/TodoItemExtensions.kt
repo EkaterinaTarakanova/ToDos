@@ -17,7 +17,7 @@ private fun TodoItem.toJsonObject() : JSONObject{
     json.put(JsonField.IS_DONE.value, isDone)
 
     if (color != Color.White) {
-        json.put(JsonField.COLOR.value, color.toArgb())
+        color?.let { json.put(JsonField.COLOR.value, it.toArgb()) }
     }
 
     if (importance != Importance.ORDINARY) {
