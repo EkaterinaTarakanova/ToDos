@@ -32,15 +32,10 @@ fun NavigationGraph(fileStorage: FileStorage) {
 
     NavHost(navController = navController, startDestination = Routes.ListScreen.route) {
         composable(Routes.ListScreen.route) {
-            val newTaskId = navController.currentBackStackEntry?.savedStateHandle?.get<String>("newTaskId")
 
             TaskListScreen(
                 onAddTaskClick = {
                     navController.navigate(Routes.EditScreen.route + "/new")
-                },
-                newTaskID = newTaskId,
-                onNewTaskAddAdded = {
-                    navController.currentBackStackEntry?.savedStateHandle?.remove<String>("newTaskId")
                 },
                 taskListViewModelFactory = taskListViewModelFactory,
                 onTaskClick = { taskId -> navController.navigate(Routes.EditScreen.route + "/$taskId") })
@@ -56,7 +51,6 @@ fun NavigationGraph(fileStorage: FileStorage) {
                 onColorPickerClick = {
                     navController.navigate(Routes.ColorPicker.route)
                 },
-                customColor = selectedColorFromPicker ?: savedColor.value,
                 onSaveTask = { savedTask ->
                     navController.previousBackStackEntry?.savedStateHandle?.set(
                         "newTaskId",
@@ -64,7 +58,8 @@ fun NavigationGraph(fileStorage: FileStorage) {
                     )
                     navController.popBackStack()
                 },
-                editTaskViewModelFactory = editTaskViewModelFactory
+                editTaskViewModelFactory = editTaskViewModelFactory,
+                customColor = selectedColorFromPicker
             )
         }
 

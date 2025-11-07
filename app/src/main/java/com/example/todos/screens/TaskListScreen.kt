@@ -49,19 +49,11 @@ import com.example.todos.viewModels.TaskListViewModel
 @Composable
 fun TaskListScreen(
     onAddTaskClick: () -> Unit,
-    newTaskID: String?,
-    onNewTaskAddAdded: () -> Unit,
     taskListViewModelFactory: TaskListViewModelFactory,
     onTaskClick: (String) -> Unit,
 ) {
     val viewModel: TaskListViewModel = viewModel(factory = taskListViewModelFactory)
 
-    if (newTaskID != null) {
-        val newTask = viewModel.todosList.find { it.uid == newTaskID }
-        if (newTask != null) {
-            onNewTaskAddAdded()
-        }
-    }
     Box(
         modifier = Modifier
             .fillMaxSize()

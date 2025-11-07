@@ -20,6 +20,11 @@ private fun TodoItem.toJsonObject() : JSONObject{
         color?.let { json.put(JsonField.COLOR.value, it.toArgb()) }
     }
 
+    if (customColor != null) {
+        json.put(JsonField.CUSTOM_COLOR.value, customColor.toArgb())
+    }
+
+
     if (importance != Importance.ORDINARY) {
         json.put(JsonField.IMPORTANCE.value, importance.name)
     }
@@ -42,6 +47,12 @@ fun JSONObject.parse(): TodoItem? {
         Color.White
     }
 
+    val customColor = if (has(JsonField.CUSTOM_COLOR.value)) {
+        Color(getInt(JsonField.CUSTOM_COLOR.value))
+    } else {
+        null
+    }
+
     val importance = if (has(JsonField.IMPORTANCE.value)) {
         Importance.valueOf(getString(JsonField.IMPORTANCE.value))
     } else {
@@ -60,7 +71,8 @@ fun JSONObject.parse(): TodoItem? {
         importance = importance,
         color = color,
         deadline = deadline,
-        isDone = isDone
+        isDone = isDone,
+        customColor = customColor
     )
 }
 
@@ -70,5 +82,6 @@ private enum class JsonField(val value: String) {
     IS_DONE("isDone"),
     COLOR("color"),
     IMPORTANCE("importance"),
-    DEADLINE("deadline")
+    DEADLINE("deadline"),
+    CUSTOM_COLOR("customColor"),
 }

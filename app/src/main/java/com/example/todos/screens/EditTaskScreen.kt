@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,10 @@ fun EditTaskScreen(
 ) {
     val viewModel: EditTaskViewModel = viewModel(factory = editTaskViewModelFactory)
 
+    LaunchedEffect(customColor) {
+        customColor?.let { color -> viewModel.customColor.value = color }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -47,7 +52,7 @@ fun EditTaskScreen(
                 CheckTaskState(isChecked = viewModel.isDone)
                 ImportancePicker(viewModel.isDone.value, viewModel.selectedImportance)
                 TaskColorPicker(
-                    customColor = customColor,
+                    customColor = viewModel.customColor.value,
                     onColorPickerClick = onColorPickerClick,
                     isDone = viewModel.isDone.value,
                     selectedColor = viewModel.selectedColor
