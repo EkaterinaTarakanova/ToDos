@@ -32,6 +32,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +54,10 @@ fun TaskListScreen(
     onTaskClick: (String) -> Unit,
 ) {
     val viewModel: TaskListViewModel = viewModel(factory = taskListViewModelFactory)
+
+    LaunchedEffect(Unit) {
+        viewModel.loadTodos()
+    }
 
     Box(
         modifier = Modifier
@@ -166,7 +171,7 @@ fun TodoItemDrawer(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    ImportanceMark(importance = todoItem.importance, todoItem = todoItem)
+                    ImportanceMark(importance = todoItem.importance)
                     todoItem.deadline?.let { DeadlineMark(deadlineMillis = it.millis) }
                 }
                 HorizontalDivider(
@@ -180,7 +185,7 @@ fun TodoItemDrawer(
 }
 
 @Composable
-fun ImportanceMark(importance: Importance, todoItem: TodoItem) {
+fun ImportanceMark(importance: Importance) {
     Box(
         modifier = Modifier
             .clip(shape = RoundedCornerShape(8.dp))
@@ -188,7 +193,7 @@ fun ImportanceMark(importance: Importance, todoItem: TodoItem) {
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-            text = todoItem.importance.russianName,
+            text = importance.russianName,
             style = TextStyle(color = Color.White)
         )
     }

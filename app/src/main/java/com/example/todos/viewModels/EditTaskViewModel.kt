@@ -1,16 +1,13 @@
 package com.example.todos.viewModels
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.todos.FileStorage
 import com.example.todos.Importance
 import com.example.todos.TodoItem
-import com.example.todos.components.convertMillisToDate
 import org.joda.time.DateTime
-import java.util.UUID
 
 class EditTaskViewModel(
     private val fileStorage: FileStorage,
@@ -60,16 +57,18 @@ class EditTaskViewModel(
             fileStorage.addNewTodo(newTask)
             newTask
         } else {
-            val updatedTask = currentTask!!.copy(
-                text = text.value,
-                isDone = isDone.value,
-                importance = selectedImportance.value,
-                deadline = DateTime(onDateSelected.value),
-                color = selectedColor.value,
-                customColor = customColor.value
-            )
-            fileStorage.updateTodo(updatedTask)
-            updatedTask
+            currentTask?.let { currentTask ->
+                val updatedTask = currentTask.copy(
+                    text = text.value,
+                    isDone = isDone.value,
+                    importance = selectedImportance.value,
+                    deadline = DateTime(onDateSelected.value),
+                    color = selectedColor.value,
+                    customColor = customColor.value
+                )
+                fileStorage.updateTodo(updatedTask)
+                updatedTask
+            } ?: throw IllegalArgumentException("Задача с uid $todoId не найдена")
         }
     }
 }
