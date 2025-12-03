@@ -8,11 +8,14 @@ data class TodoItem(
     val uid: String = UUID.randomUUID().toString(),
     val text: String,
     val importance: Importance,
-    val color: Color = Color.White,
+    val color: Color? = Color.White,
+    val customColor: Color? = null,
     val deadline: DateTime? = null,
     val isDone: Boolean = false
 )
 
-enum class Importance {
-    UNIMPORTANT, ORDINARY, IMPORTANT
+enum class Importance(val russianName: String, val color: Color) {
+    UNIMPORTANT(russianName = "Неважная", color = Color.Gray),
+    ORDINARY(russianName = "Обычная", color = Color(0xFF22C55E)),
+    IMPORTANT(russianName = "Важная", color = Color.Red)
 }

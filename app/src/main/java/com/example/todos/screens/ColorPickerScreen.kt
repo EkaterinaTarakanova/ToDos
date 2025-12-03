@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Slider
@@ -27,42 +28,47 @@ import com.example.todos.components.ColorPicker
 fun ColorPickerScreen(
     onClick: (Color, Offset) -> Unit,
     initialColor: Color,
-    initialPosition: Offset?
+    initialPosition: Offset?,
 ) {
     val currentColor = remember { mutableStateOf(initialColor) }
     val currentPosition = remember { mutableStateOf(initialPosition ?: Offset.Zero) }
-    val brightness = remember { mutableFloatStateOf(1f) }
+    val currentBrightness = remember { mutableFloatStateOf(1f) }
     val canvasSize = remember { mutableStateOf(Offset(300f, 300f)) }
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Row {
-            SelectedColor(color = currentColor.value)
-            Slider(
-                value = brightness.value,
-                onValueChange = { newBrightness ->
-                    brightness.value = newBrightness
-                    val hue = (currentPosition.value.x / canvasSize.value.x) * 360
-                    val saturation = 1 - (currentPosition.value.y / canvasSize.value.y)
-                    val newColor = Color.hsv(hue = hue, value = newBrightness, saturation = saturation)
-                    currentColor.value = newColor
-                },
-                valueRange = 0f..1f
-            )
-        }
-        ColorPicker(
-            onColorChanged = { newColor -> currentColor.value = newColor },
-            currentPosition = currentPosition,
-            brightness = brightness.value,
-            onCanvasSize = { width, height -> canvasSize.value = Offset(width, height) }
-        )
-        Button(onClick = { onClick(currentColor.value, currentPosition.value) }) {
-            Text(text = "Done")
+        item {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row {
+                    SelectedColor(color = currentColor.value)
+                    Slider(
+                        value = currentBrightness.value,
+                        onValueChange = { newBrightness ->
+                            currentBrightness.value = newBrightness
+                            val hue = (currentPosition.value.x / canvasSize.value.x) * 360
+                            val saturation = 1 - (currentPosition.value.y / canvasSize.value.y)
+                            val newColor = Color.hsv(hue = hue, value = newBrightness, saturation = saturation)
+                            currentColor.value = newColor
+                        },
+                        valueRange = 0f..1f
+                    )
+                }
+                ColorPicker(
+                    onColorChanged = { newColor -> currentColor.value = newColor },
+                    currentPosition = currentPosition,
+                    brightness = currentBrightness.value,
+                    onCanvasSize = { width, height -> canvasSize.value = Offset(width, height) }
+                )
+                Button(onClick = { onClick(currentColor.value, currentPosition.value) }) {
+                    Text(text = "Done")
+                }
+            }
         }
     }
 }

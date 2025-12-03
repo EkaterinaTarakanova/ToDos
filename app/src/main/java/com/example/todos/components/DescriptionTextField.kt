@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -21,17 +22,20 @@ import androidx.compose.ui.unit.dp
 import com.example.todos.R
 
 @Composable
-fun DescriptionTextField(isDone: Boolean) {
-    val inputText = remember { mutableStateOf("") }
+fun DescriptionTextField(isDone: Boolean, inputText: MutableState<String>) {
     val textStyle = LocalTextStyle.current
 
     Column(modifier = Modifier.alpha(if (isDone) 0.5f else 1f)) {
         TextWithIcon(title = "Описание", icon = R.drawable.description_icon)
 
-        Box(
+        BasicTextField(
+            value = inputText.value,
+            onValueChange = { if (!isDone) inputText.value = it },
+            textStyle = textStyle.copy(color = if (isDone) Color.Gray else Color.Black),
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 56.dp, max = 200.dp)
+                .imePadding()
+                .heightIn(min = 56.dp)
                 .background(
                     color = if (isDone) Color.LightGray else Color.White,
                     shape = RoundedCornerShape(4.dp)
@@ -41,21 +45,12 @@ fun DescriptionTextField(isDone: Boolean) {
                     color = if (isDone) Color.Gray else Color(0xFFC4B5FD),
                     shape = RoundedCornerShape(4.dp)
                 )
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            BasicTextField(
-                value = inputText.value,
-                onValueChange = { if (!isDone) inputText.value = it },
-                textStyle = textStyle.copy(color = if (isDone) Color.Gray else Color.Black),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .imePadding(),
-                enabled = !isDone,
-                maxLines = 10,
-                decorationBox = { innerTextField ->
-                    innerTextField()
-                }
-            )
-        }
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            enabled = !isDone,
+            decorationBox = { innerTextField ->
+                innerTextField()
+            }
+        )
     }
+
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,7 +24,7 @@ import com.example.todos.R
 @Composable
 fun TaskColorPicker(
     onColorPickerClick: () -> Unit,
-    customColor: Color?, isDone: Boolean
+    customColor: Color?, isDone: Boolean, selectedColor: MutableState<Color?>
 ) {
     val colors = listOf(
         Color(0xFF22C55E),
@@ -32,7 +33,6 @@ fun TaskColorPicker(
         Color(0xFF8B5CF6),
         Color(0xFF3B82F6)
     )
-    val selectedColor = remember { mutableStateOf<Color?>(null) }
 
     Column(modifier = Modifier.alpha(if(isDone) 0.5f else 1f)) {
         TextWithIcon(title = "Выбор цвета", icon = R.drawable.icon_calendar)
@@ -56,8 +56,8 @@ fun TaskColorPicker(
             }
 
             CustomColorPicker(
-                isSelected = (customColor != null && selectedColor.value == null),
-                onClick = { if (!isDone && customColor != null) selectedColor.value = null },
+                isSelected = (selectedColor.value == customColor),
+                onClick = { if (!isDone) selectedColor.value = customColor },
                 onLongClick = { if (!isDone) onColorPickerClick() },
                 customColor = customColor,
                 isEnabled = !isDone
