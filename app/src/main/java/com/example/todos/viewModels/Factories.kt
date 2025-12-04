@@ -1,10 +1,9 @@
-package com.example.todos
+package com.example.todos.viewModels
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.todos.viewModels.EditTaskViewModel
-import com.example.todos.viewModels.TaskListViewModel
+import com.example.todos.data.FileStorage
 
 class TaskListViewModelFactory(private val fileStorage: FileStorage) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

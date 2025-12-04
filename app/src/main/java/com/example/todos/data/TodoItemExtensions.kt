@@ -1,4 +1,4 @@
-package com.example.todos
+package com.example.todos.data
 
 import androidx.compose.ui.graphics.Color
 import org.json.JSONObject

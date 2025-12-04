@@ -10,13 +10,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.todos.EditTaskViewModelFactory
-import com.example.todos.TodoItem
+import com.example.todos.viewModels.EditTaskViewModelFactory
+import com.example.todos.data.TodoItem
 import com.example.todos.components.CheckTaskState
 import com.example.todos.components.DescriptionTextField
 import com.example.todos.components.ImportancePicker

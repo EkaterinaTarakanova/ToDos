@@ -2,8 +2,8 @@ package com.example.todos.viewModels
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.example.todos.FileStorage
-import com.example.todos.TodoItem
+import com.example.todos.data.FileStorage
+import com.example.todos.data.TodoItem
 
 class TaskListViewModel(private val fileStorage: FileStorage) : ViewModel() {
     private val _todoList = mutableStateListOf<TodoItem>()

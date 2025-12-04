@@ -4,9 +4,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.example.todos.FileStorage
-import com.example.todos.Importance
-import com.example.todos.TodoItem
+import com.example.todos.data.FileStorage
+import com.example.todos.data.Importance
+import com.example.todos.data.TodoItem
 import org.joda.time.DateTime
 
 class EditTaskViewModel(
