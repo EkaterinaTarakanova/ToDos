@@ -41,9 +41,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.todos.Importance
-import com.example.todos.TaskListViewModelFactory
-import com.example.todos.TodoItem
+import com.example.todos.data.Importance
+import com.example.todos.viewModels.TaskListViewModelFactory
+import com.example.todos.data.TodoItem
 import com.example.todos.components.convertMillisToDate
 import com.example.todos.viewModels.TaskListViewModel
 

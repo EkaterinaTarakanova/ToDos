@@ -1,6 +1,5 @@
 package com.example.todos.navigation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,9 +14,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.todos.EditTaskViewModelFactory
-import com.example.todos.FileStorage
-import com.example.todos.TaskListViewModelFactory
+import com.example.todos.viewModels.EditTaskViewModelFactory
+import com.example.todos.data.FileStorage
+import com.example.todos.viewModels.TaskListViewModelFactory
 import com.example.todos.screens.ColorPickerScreen
 import com.example.todos.screens.EditTaskScreen
 import com.example.todos.screens.TaskListScreen

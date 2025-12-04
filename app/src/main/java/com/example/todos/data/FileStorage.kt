@@ -1,9 +1,8 @@
-package com.example.todos
+package com.example.todos.data
 
 import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
 import org.json.JSONArray
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class FileStorage(context: Context) {
