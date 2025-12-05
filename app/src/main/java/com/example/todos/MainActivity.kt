@@ -15,7 +15,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.todos.ui.theme.ToDosTheme
 import ch.qos.logback.classic.android.BasicLogcatConfigurator;
 import com.example.todos.data.FileStorage
+import com.example.todos.data.RemoteServer
 import com.example.todos.navigation.NavigationGraph
+import com.example.todos.repository.TodoRepository
 
 class MainActivity : ComponentActivity() {
     companion object {
@@ -34,8 +36,10 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(Color(0xFFE0F2FE))
                 )
-                val fileStorage: FileStorage = FileStorage(this)
-                NavigationGraph(fileStorage)
+                val fileStorage = FileStorage(this)
+                val remoteServer = RemoteServer()
+                val todoRepository = TodoRepository(fileStorage, remoteServer)
+                NavigationGraph(todoRepository)
             }
         }
     }

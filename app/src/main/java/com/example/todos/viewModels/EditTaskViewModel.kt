@@ -4,13 +4,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.example.todos.data.FileStorage
+import androidx.lifecycle.viewModelScope
 import com.example.todos.data.Importance
 import com.example.todos.data.TodoItem
+import com.example.todos.repository.TodoRepository
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 
 class EditTaskViewModel(
-    private val fileStorage: FileStorage,
+    private val todoRepository: TodoRepository,
     val todoId: String,
     val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -20,18 +23,33 @@ class EditTaskViewModel(
     val selectedImportance = mutableStateOf(Importance.ORDINARY)
     val selectedColor = mutableStateOf<Color?>(null)
     val customColor = mutableStateOf<Color?>(null)
-    var currentTask: TodoItem? = null
+    private var currentTask: TodoItem? = null
 
     init {
-        val selectedColorFromPicker = savedStateHandle.get<Int>("selectedColor")?.let {
-            Color(it)
+        savedStateHandle.get<Int>("selectedColor")?.let { colorInt ->
+            customColor.value = Color(colorInt)
+            selectedColor.value = customColor.value
         }
-        if (selectedColorFromPicker != null) {
-            customColor.value = selectedColorFromPicker
+    }
+
+    fun loadData() {
+        viewModelScope.launch {
+            val colorInt = savedStateHandle
+                .getStateFlow<Int?>("selectedColor", null)
+                .firstOrNull()
+
+            colorInt?.let {
+                customColor.value = Color(it)
+                selectedColor.value = Color(it)
+            }
         }
+
         if (todoId != "new") {
-            currentTask = fileStorage.todoItems.find { it.uid == todoId }
-            currentTask?.let { loadTask(it) }
+            viewModelScope.launch {
+                val task = todoRepository.getTodoById(todoId).firstOrNull()
+                currentTask = task
+                task?.let { loadTask(it) }
+            }
         }
     }
 
@@ -41,34 +59,36 @@ class EditTaskViewModel(
         onDateSelected.value = todoItem.deadline?.millis
         selectedImportance.value = todoItem.importance
         selectedColor.value = todoItem.color
-        customColor.value = todoItem.customColor
     }
 
-    fun saveTask(): TodoItem {
-        return if (todoId == "new") {
-            val newTask = TodoItem(
-                text = text.value,
-                isDone = isDone.value,
-                importance = selectedImportance.value,
-                deadline = DateTime(onDateSelected.value),
-                color = selectedColor.value,
-                customColor = customColor.value
-            )
-            fileStorage.addNewTodo(newTask)
-            newTask
-        } else {
-            currentTask?.let { currentTask ->
-                val updatedTask = currentTask.copy(
+    fun saveTask(onSaved: (TodoItem) -> Unit) {
+        viewModelScope.launch {
+            val taskToSave = if (todoId == "new") {
+                TodoItem(
                     text = text.value,
                     isDone = isDone.value,
                     importance = selectedImportance.value,
                     deadline = DateTime(onDateSelected.value),
                     color = selectedColor.value,
-                    customColor = customColor.value
                 )
-                fileStorage.updateTodo(updatedTask)
-                updatedTask
-            } ?: throw IllegalArgumentException("Задача с uid $todoId не найдена")
+            } else {
+                currentTask?.copy(
+                    text = text.value,
+                    isDone = isDone.value,
+                    importance = selectedImportance.value,
+                    deadline = DateTime(onDateSelected.value),
+                    color = selectedColor.value,
+                )
+            }
+
+            taskToSave?.let {
+                onSaved(it)
+                if (todoId == "new") {
+                    todoRepository.addTodo(it)
+                } else {
+                    todoRepository.updateTodo(it)
+                }
+            }
         }
     }
 }

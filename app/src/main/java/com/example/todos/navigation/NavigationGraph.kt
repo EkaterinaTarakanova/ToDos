@@ -9,25 +9,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.remember
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.todos.viewModels.EditTaskViewModelFactory
-import com.example.todos.data.FileStorage
+import com.example.todos.repository.TodoRepository
 import com.example.todos.viewModels.TaskListViewModelFactory
 import com.example.todos.screens.ColorPickerScreen
 import com.example.todos.screens.EditTaskScreen
 import com.example.todos.screens.TaskListScreen
 
 @Composable
-fun NavigationGraph(fileStorage: FileStorage) {
+fun NavigationGraph(todoRepository: TodoRepository) {
     val navController = rememberNavController()
     val savedColor = remember { mutableStateOf<Color?>(null) }
-    val savedPosition = remember { mutableStateOf<Offset?>(null) }
 
-    val taskListViewModelFactory = TaskListViewModelFactory(fileStorage)
+    val taskListViewModelFactory = TaskListViewModelFactory(todoRepository)
 
     NavHost(navController = navController, startDestination = Routes.ListScreen.route) {
         composable(Routes.ListScreen.route) {
@@ -42,7 +40,7 @@ fun NavigationGraph(fileStorage: FileStorage) {
 
         composable(Routes.EditScreen.route + "/{todoId}") { stackEntry ->
             val todoId = stackEntry.arguments?.getString("todoId")
-            val editTaskViewModelFactory = EditTaskViewModelFactory(fileStorage, todoId ?: "new", stackEntry.savedStateHandle)
+            val editTaskViewModelFactory = EditTaskViewModelFactory(todoRepository, todoId ?: "new", stackEntry.savedStateHandle)
 
             EditTaskScreen(
                 onColorPickerClick = {
@@ -69,16 +67,14 @@ fun NavigationGraph(fileStorage: FileStorage) {
                 ) + fadeOut(animationSpec = tween(durationMillis = 500))
             }) {
             ColorPickerScreen(
-                onClick = { selectedColor, selectedPosition ->
+                onClick = { selectedColor ->
                     savedColor.value = selectedColor
-                    savedPosition.value = selectedPosition
                     navController.previousBackStackEntry
                         ?.savedStateHandle
                         ?.set("selectedColor", selectedColor.toArgb())
                     navController.popBackStack()
                 },
                 initialColor = savedColor.value ?: Color.Red,
-                initialPosition = savedPosition.value
             )
         }
     }

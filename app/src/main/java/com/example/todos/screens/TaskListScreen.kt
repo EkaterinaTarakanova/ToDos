@@ -32,7 +32,8 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,10 +55,7 @@ fun TaskListScreen(
     onTaskClick: (String) -> Unit,
 ) {
     val viewModel: TaskListViewModel = viewModel(factory = taskListViewModelFactory)
-
-    LaunchedEffect(Unit) {
-        viewModel.loadTodos()
-    }
+    val tasks by viewModel.todosList.collectAsState()
 
     Box(
         modifier = Modifier
@@ -78,7 +76,7 @@ fun TaskListScreen(
                 Text(text = "Мои дела", style = TextStyle(fontSize = 30.sp))
             }
             LazyColumn(modifier = Modifier.padding(vertical = 20.dp)) {
-                items(items = viewModel.todosList, key = { it.uid }) { item ->
+                items(items = tasks, key = { it.uid }) { item ->
                     TodoItemDrawer(
                         todoItem = item,
                         onCheckedChanged = { viewModel.toggleStateChange(todoItem = item) },

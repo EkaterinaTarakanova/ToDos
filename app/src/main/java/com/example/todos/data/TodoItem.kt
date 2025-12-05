@@ -9,7 +9,6 @@ data class TodoItem(
     val text: String,
     val importance: Importance,
     val color: Color? = Color.White,
-    val customColor: Color? = null,
     val deadline: DateTime? = null,
     val isDone: Boolean = false
 )
