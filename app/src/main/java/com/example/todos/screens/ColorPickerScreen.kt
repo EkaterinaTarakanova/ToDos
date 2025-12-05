@@ -26,12 +26,11 @@ import com.example.todos.components.ColorPicker
 
 @Composable
 fun ColorPickerScreen(
-    onClick: (Color, Offset) -> Unit,
+    onClick: (Color) -> Unit,
     initialColor: Color,
-    initialPosition: Offset?,
 ) {
     val currentColor = remember { mutableStateOf(initialColor) }
-    val currentPosition = remember { mutableStateOf(initialPosition ?: Offset.Zero) }
+    val currentPosition = remember { mutableStateOf(Offset.Zero) }
     val currentBrightness = remember { mutableFloatStateOf(1f) }
     val canvasSize = remember { mutableStateOf(Offset(300f, 300f)) }
 
@@ -65,7 +64,7 @@ fun ColorPickerScreen(
                     brightness = currentBrightness.value,
                     onCanvasSize = { width, height -> canvasSize.value = Offset(width, height) }
                 )
-                Button(onClick = { onClick(currentColor.value, currentPosition.value) }) {
+                Button(onClick = { onClick(currentColor.value) }) {
                     Text(text = "Done")
                 }
             }

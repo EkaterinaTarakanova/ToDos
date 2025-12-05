@@ -1,35 +1,31 @@
 package com.example.todos.viewModels
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.example.todos.data.FileStorage
+import androidx.lifecycle.viewModelScope
 import com.example.todos.data.TodoItem
+import com.example.todos.repository.TodoRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-class TaskListViewModel(private val fileStorage: FileStorage) : ViewModel() {
-    private val _todoList = mutableStateListOf<TodoItem>()
-    val todosList: List<TodoItem> get() = _todoList
-
-    init {
-        loadTodos()
-    }
-
-    fun loadTodos() {
-        fileStorage.loadTodosFromFile()
-        _todoList.clear()
-        _todoList.addAll(fileStorage.todoItems)
-    }
+class TaskListViewModel(private val todoRepository: TodoRepository) : ViewModel() {
+    val todosList: StateFlow<List<TodoItem>> = todoRepository.getTodos()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     fun deleteTodoItem(todoItem: TodoItem) {
-        fileStorage.deleteTodo(todoItem.uid)
-        _todoList.removeAll { it.uid == todoItem.uid }
+        viewModelScope.launch {
+            todoRepository.deleteTodo(todoItem.uid)
+        }
     }
 
     fun toggleStateChange(todoItem: TodoItem) {
-        val updatedTodo = todoItem.copy(isDone = !todoItem.isDone)
-        fileStorage.updateTodo(updatedTodo)
-        val index = _todoList.indexOfFirst { it.uid == todoItem.uid }
-        if (index != -1) {
-            _todoList[index] = updatedTodo
+        viewModelScope.launch {
+            todoRepository.updateTodo(todoItem.copy(isDone = !todoItem.isDone))
         }
     }
 }
