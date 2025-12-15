@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,6 +29,10 @@ fun EditTaskScreen(
     onSaveTask: (TodoItem) -> Unit, editTaskViewModelFactory: EditTaskViewModelFactory
 ) {
     val viewModel: EditTaskViewModel = viewModel(factory = editTaskViewModelFactory)
+
+    LaunchedEffect(Unit){
+        viewModel.loadData()
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -51,8 +56,9 @@ fun EditTaskScreen(
                     selectedColor = viewModel.selectedColor
                 )
                 TextButton(onClick = {
-                    val savedTask = viewModel.saveTask()
-                    onSaveTask(savedTask)
+                    viewModel.saveTask { savedTask ->
+                        onSaveTask(savedTask)
+                    }
                 }) {
                     Text(text = "Сохранить")
                 }
