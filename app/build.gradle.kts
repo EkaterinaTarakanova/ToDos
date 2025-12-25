@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,6 +10,16 @@ android {
     namespace = "com.example.todos"
     compileSdk = 36
 
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(localPropertiesFile.inputStream())
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.todos"
         minSdk = 24
@@ -16,31 +28,69 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders["YANDEX_CLIENT_ID"] = localProperties.getProperty("YANDEX_CLIENT_ID", "")
+
+        buildConfigField(
+            "String",
+            "YANDEX_CLIENT_ID",
+            "\"${localProperties.getProperty("YANDEX_CLIENT_ID", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "YANDEX_REDIRECT_URI",
+            "\"${localProperties.getProperty("YANDEX_REDIRECT_URI", "https://oauth.yandex.ru/verification_code")}\""
+        )
+        buildConfigField(
+            "String",
+            "BEARER_TOKEN",
+            "\"${localProperties.getProperty("BEARER_TOKEN", "")}\""
+        )
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("../release-keystore.jks")
+            storePassword = "velasa"
+            keyAlias = "release"
+            keyPassword = "velasa"
+        }
     }
 
     buildTypes {
-        release {
+        getByName("debug") {
+            isMinifyEnabled = false
+            buildConfigField(
+                "String",
+                "BEARER_TOKEN",
+                "\"${localProperties.getProperty("BEARER_TOKEN_DEBUG", localProperties.getProperty("BEARER_TOKEN", ""))}\""
+            )
+        }
+
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -54,6 +104,11 @@ dependencies {
     implementation("joda-time:joda-time:2.12.2")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.navigation:navigation-compose:2.9.5")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.activity:activity-ktx:1.11.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
