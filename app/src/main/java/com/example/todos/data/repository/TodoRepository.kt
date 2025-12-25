@@ -7,7 +7,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.todos.data.local.FileStorage
+import com.example.todos.data.local.database.datastorage.RoomDataStorage
 import com.example.todos.data.network.RemoteServer
 import com.example.todos.domain.model.TodoItem
 import com.example.todos.data.network.sync.OperationsQueue
@@ -21,27 +21,26 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class TodoRepository(
-    private val fileStorage: FileStorage,
     private val remoteServer: RemoteServer,
-    private val context: Context
+    private val context: Context,
+    private val roomDataStorage: RoomDataStorage
 ) {
     fun getTodos(): Flow<List<TodoItem>> = flow {
-        emit(fileStorage.todoItems.value)
+        emitAll(roomDataStorage.todoItems)
         withContext(Dispatchers.IO) {
             try {
                 val serverTasks = remoteServer.loadTodosFromServer()
                 if (serverTasks.isNotEmpty()) {
-                    fileStorage.saveAll(serverTasks)
+                    roomDataStorage.saveAll(serverTasks)
                 }
             } catch (e: Exception) {
                 println("Ошибка: ${e.message}")
             }
         }
-        emitAll(fileStorage.todoItems)
     }
 
     suspend fun addTodo(todoItem: TodoItem) {
-        fileStorage.addNewTodo(todoItem)
+        roomDataStorage.addNewTodo(todoItem)
         withContext(Dispatchers.IO) {
             try {
                 remoteServer.addNewTodo(todoItem)
@@ -56,14 +55,13 @@ class TodoRepository(
                 )
                 syncWithServer()
             }
-
         }
     }
 
     suspend fun deleteTodo(uid: String) {
-        val deleteTodo = fileStorage.todoItems.value.find { it.uid == uid }
+        val deleteTodo = roomDataStorage.findById(uid)
         if (deleteTodo != null) {
-            fileStorage.deleteTodo(deleteTodo.uid)
+            roomDataStorage.deleteTodo(uid)
 
             withContext(Dispatchers.IO) {
                 try {
@@ -84,7 +82,7 @@ class TodoRepository(
     }
 
     suspend fun updateTodo(updatedTodo: TodoItem) {
-        fileStorage.updateTodo(updatedTodo)
+        roomDataStorage.updateTodo(updatedTodo)
 
         withContext(Dispatchers.IO) {
             try {
@@ -104,16 +102,17 @@ class TodoRepository(
     }
 
     fun getTodoById(uid: String): Flow<TodoItem?> = flow {
-        emit(fileStorage.todoItems.value.find { it.uid == uid })
+        val localTodo = roomDataStorage.findById(uid)
+        emit(localTodo)
 
         withContext(Dispatchers.IO) {
             try {
                 val serverTodo = remoteServer.getTodo(uid)
+                roomDataStorage.updateTodo(serverTodo)
                 emit(serverTodo)
             } catch (e: Exception) {
                 OperationsQueue.add(
-                    UnsyncedOperations
-                        (
+                    UnsyncedOperations(
                         type = "GET",
                         item = null,
                         itemId = uid

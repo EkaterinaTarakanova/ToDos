@@ -23,14 +23,16 @@ import com.example.todos.presentation.navigation.NavigationGraph
 import com.example.todos.data.repository.TodoRepository
 import com.example.todos.presentation.screens.LoginScreen
 import androidx.core.content.edit
+import com.example.todos.data.local.database.AppDatabase
+import com.example.todos.data.local.database.datastorage.RoomDataStorage
 
 class MainActivity : ComponentActivity() {
     init {
         BasicLogcatConfigurator.configureDefaultContext()
     }
-
-    private lateinit var fileStorage: FileStorage
     private lateinit var remoteServer: RemoteServer
+    private lateinit var database: AppDatabase
+    private lateinit var roomDataStorage: RoomDataStorage
     private lateinit var todoRepository: TodoRepository
     private lateinit var yandexAuthLauncher: ActivityResultLauncher<Intent>
 
@@ -46,9 +48,14 @@ class MainActivity : ComponentActivity() {
         val prefs = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
         prefs.edit { remove("oauth_token") }
 
-        fileStorage = FileStorage(applicationContext)
         remoteServer = RemoteServer(applicationContext)
-        todoRepository = TodoRepository(fileStorage, remoteServer, context = applicationContext)
+        database = AppDatabase.getInstance(applicationContext)
+        roomDataStorage = RoomDataStorage(database)
+        todoRepository = TodoRepository(
+            remoteServer = remoteServer,
+            context = applicationContext,
+            roomDataStorage = roomDataStorage
+        )
 
         showLoginChoice()
     }
