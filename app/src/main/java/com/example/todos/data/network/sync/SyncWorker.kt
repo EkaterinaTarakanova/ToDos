@@ -3,10 +3,12 @@ package com.example.todos.data.network.sync
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.todos.data.local.FileStorage
+import com.example.todos.data.local.database.AppDatabase
+import com.example.todos.data.local.database.datastorage.RoomDataStorage
 import com.example.todos.domain.model.TodoItem
 import com.example.todos.data.network.RemoteServer
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
@@ -14,7 +16,8 @@ class SyncWorker(
     appContext: Context,
     workerParameters: WorkerParameters
 ) : CoroutineWorker(appContext, workerParameters) {
-    private val fileStorage = FileStorage(applicationContext)
+    private val database = AppDatabase.getInstance(applicationContext)
+    private val roomDataStorage = RoomDataStorage(database)
     private val remoteServer = RemoteServer(applicationContext)
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         while (OperationsQueue.get().isNotEmpty()) {
@@ -24,8 +27,7 @@ class SyncWorker(
                     val success = executeOperation(op = op)
                     if (success) {
                         OperationsQueue.removeFirst()
-                    }
-                    else {
+                    } else {
                         return@withContext handle400Error()
                     }
                 }
@@ -62,10 +64,10 @@ class SyncWorker(
     private suspend fun handle400Error(): Result {
         return try {
             val serverList = remoteServer.loadTodosFromServer()
-            val localList = fileStorage.todoItems.value
+            val localList = roomDataStorage.todoItems.first()
             val mergedList = mergeLists(localList, serverList)
             val finalList = remoteServer.syncTodos(mergedList)
-            fileStorage.saveAll(finalList)
+            roomDataStorage.saveAll(finalList)
             OperationsQueue.clear()
             Result.success()
         } catch (e: Exception) {

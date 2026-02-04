@@ -44,7 +44,7 @@ object TodoMapper {
         )
     }
 
-    private fun getColorFromString(hexColor: String?): Color? {
+    fun getColorFromString(hexColor: String?): Color? {
         if (hexColor.isNullOrBlank()) return null
 
         val cleanHex = hexColor.removePrefix("#")
@@ -58,7 +58,7 @@ object TodoMapper {
         return Color(colorInt)
     }
 
-    private fun colorToHexString(color: Color): String {
+    fun colorToHexString(color: Color): String {
         val argb = color.toArgb()
         val rgb = argb and 0x00FFFFFF
         return String.format("#%06X", rgb)
